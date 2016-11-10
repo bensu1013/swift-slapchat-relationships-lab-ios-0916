@@ -8,19 +8,28 @@
 
 import UIKit
 
-class TableViewController: UITableViewController {
+class MessageTableViewController: UITableViewController {
     
     var store = DataStore.sharedInstance
-
+    var selectedRecipient: Recipient?
+    var messages = [Message]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        store.fetchData()
+  
+        for msg in store.messages {
+            
+            if msg.recipient == selectedRecipient {
+                messages.append(msg)
+            }
+            
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(true)
-        
         store.fetchData()
         tableView.reloadData()
     }
@@ -33,18 +42,34 @@ class TableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return store.messages.count
+        return self.messages.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "basicCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "messageCell", for: indexPath)
 
-        let eachMessage = store.messages[indexPath.row]
+        let eachMessage = self.messages[indexPath.row]
         
         cell.textLabel?.text = eachMessage.content
 
         return cell
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let dest = segue.destination as? AddMessageViewController {
+            
+            dest.selectedRecipient = self.selectedRecipient
+            
+        }
+    }
+    
+    
+    
+    
 }
+
+
+
+
+

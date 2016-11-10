@@ -13,6 +13,8 @@ class AddMessageViewController: UIViewController {
 
     @IBOutlet weak var addMessageTextField: UITextField!
     
+    var selectedRecipient: Recipient?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -21,9 +23,10 @@ class AddMessageViewController: UIViewController {
     @IBAction func saveMessageButtonTapped(_ sender: AnyObject) {
         let store = DataStore.sharedInstance
         let context = store.persistentContainer.viewContext
-        let newMessage = NSEntityDescription.insertNewObject(forEntityName: "Message", into: context) as! Message
+        let newMessage = Message(context: context)
         newMessage.content = addMessageTextField.text
         newMessage.createdAt = NSDate()
+        newMessage.recipient = selectedRecipient
         store.saveContext()
         dismiss(animated: true, completion: nil)
     }
